@@ -7,28 +7,28 @@ import (
 )
 
 var (
-	scanner = bufio.NewScanner(os.Stdin)
-	writer  = bufio.NewWriter(os.Stdout)
+	reader = bufio.NewReader(os.Stdin)
+	writer = bufio.NewWriter(os.Stdout)
 )
 
 func main() {
 	defer writer.Flush()
-	scanner.Split(bufio.ScanLines)
-	scanner.Scan()
-	s := strings.ToLower(scanner.Text())
+	s, _ := reader.ReadString('\n')
+	s = strings.ToUpper(strings.TrimSpace(s))
 	var box [26]int
 	for i := range s {
-		if s[i] >= 'a' && 'z' >= s[i] {
-			box[s[i]-'a']++
+		if s[i] >= 'A' && 'Z' >= s[i] {
+			box[s[i]-'A']++
 		}
 	}
-
 	var maxInt = -1
 	var maxKey string
 	for i := range box {
 		if box[i] > maxInt {
-			maxInt = box[i]
-			maxKey = strings.ToUpper(string(rune(i) + 'a'))
+			if !(box[i] == 0) {
+				maxInt = box[i]
+				maxKey = string(i + 'A')
+			}
 		} else if box[i] == maxInt {
 			maxKey = "?"
 		}
