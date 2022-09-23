@@ -14,21 +14,8 @@ var (
 
 func main() {
 	defer writer.Flush()
-	s, err := reader.ReadString('\n')
-	if err != nil {
-		panic(err)
-	}
-
+	s, _ := reader.ReadString('\n')
 	s = strings.TrimSpace(s)
-
-	var cnt int
-
-	t := strings.Split(s, " ")
-	for i := range t {
-		if t[i] != "" {
-			cnt++
-		}
-	}
-
-	writer.WriteString(strconv.Itoa(cnt))
+	res := strings.Fields(s)
+	writer.WriteString(strconv.Itoa(len(res)))
 }
