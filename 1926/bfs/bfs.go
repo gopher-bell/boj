@@ -2,30 +2,31 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var (
-	scanner = bufio.NewScanner(os.Stdin)
-	writer  = bufio.NewWriter(os.Stdout)
-	graph   [][]int
-	visited [][]bool
-	n       int
-	m       int
-	dy      = []int{1, 0, -1, 0}
-	dx      = []int{0, 1, 0, -1}
+	scanner   = bufio.NewScanner(os.Stdin)
+	writer    = bufio.NewWriter(os.Stdout)
+	dx        = []int{1, 0, -1, 0}
+	dy        = []int{0, 1, 0, -1}
+	graph     [][]int
+	check     [][]bool
+	totalDraw int
+	MaxDraw   int
 )
 
-func readStdin() (int, error) {
+func readStdin() []int {
 	scanner.Scan()
-	num, err := strconv.Atoi(scanner.Text())
-	if err != nil {
-		return 0, err
+	s := strings.Fields(scanner.Text())
+	res := make([]int, len(s))
+	for i := range s {
+		t, _ := strconv.Atoi(s[i])
+		res[i] = t
 	}
-
-	return num, nil
+	return res
 }
 
 func max(a, b int) int {
@@ -37,8 +38,8 @@ func max(a, b int) int {
 }
 
 func bfs(y, x int) int {
+	var res = 1
 	queue := [][]int{{y, x}}
-	var count = 1
 	for len(queue) != 0 {
 		dq := queue[0]
 		queue = queue[1:]
@@ -46,60 +47,44 @@ func bfs(y, x int) int {
 		for i := 0; i < 4; i++ {
 			ny := dq[0] + dy[i]
 			nx := dq[1] + dx[i]
-
-			if (0 <= ny && ny < n) && (0 <= nx && nx < m) {
-				if graph[ny][nx] == 1 && !visited[ny][nx] {
-					visited[ny][nx] = true
-					count++
+			if (0 <= ny && ny < len(graph)) && (0 <= nx && nx < len(graph[0])) {
+				if graph[ny][nx] == 1 && !check[ny][nx] {
+					check[ny][nx] = true
+					res++
 					queue = append(queue, []int{ny, nx})
 				}
 			}
 		}
 	}
 
-	return count
+	return res
 }
 
 func main() {
 	defer writer.Flush()
-	scanner.Split(bufio.ScanWords)
+	scanner.Split(bufio.ScanLines)
 
-	var err error
-	n, err = readStdin()
-	if err != nil {
-		panic(err)
-	}
-	m, err = readStdin()
-	if err != nil {
-		panic(err)
-	}
+	n1 := readStdin()
 
-	graph = make([][]int, n)
-	visited = make([][]bool, n)
+	graph = make([][]int, n1[0])
+	check = make([][]bool, n1[0])
+
+	for i := 0; i < n1[0]; i++ {
+		graph[i] = readStdin()
+		check[i] = make([]bool, n1[1])
+	}
 
 	for i := range graph {
-		graph[i] = make([]int, m)
-		visited[i] = make([]bool, m)
 		for j := range graph[i] {
-			graph[i][j], err = readStdin()
-			if err != nil {
-				panic(err)
+			if graph[i][j] == 1 && !check[i][j] {
+				check[i][j] = true
+				totalDraw++
+				MaxDraw = max(MaxDraw, bfs(i, j))
 			}
 		}
 	}
 
-	var total, biggest int
-
-	for i := range graph {
-		for j := range graph[i] {
-			if graph[i][j] == 1 && !visited[i][j] {
-				visited[i][j] = true
-				total++
-				biggest = max(biggest, bfs(i, j))
-			}
-		}
-	}
-
-	fmt.Println(total)
-	fmt.Println(biggest)
+	writer.WriteString(strconv.Itoa(totalDraw))
+	writer.WriteString("\n")
+	writer.WriteString(strconv.Itoa(MaxDraw))
 }
