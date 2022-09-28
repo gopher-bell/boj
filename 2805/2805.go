@@ -33,6 +33,7 @@ func solution(trees []int) {
 				total += trees[i] - mid
 			}
 		}
+
 		if total >= need {
 			res = mid
 			min = mid + 1
