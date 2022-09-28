@@ -1,1 +1,5 @@
-# Go로 백준을 풀어보자
+# Studying Algorithms in Go
+
+https://www.acmicpc.net/problemset
+<br>
+Baekjoon is a Korean site where you can practice solving problems.
