@@ -21,22 +21,20 @@ func readWord() int {
 }
 
 func binarySearch(nums []int, find int) bool {
-	var start int
-	var end int
-
-	start = 0
-	end = len(nums) - 1
+	start := 0
+	end := len(nums) - 1
 
 	for start <= end {
 		mid := (start + end) / 2
-		if nums[mid] > find {
-			end = mid - 1
-		} else if nums[mid] < find {
-			start = mid + 1
-		} else {
+		if nums[mid] == find {
 			return true
+		} else if nums[mid] > find {
+			end = mid - 1
+		} else if find > nums[mid] {
+			start = mid + 1
 		}
 	}
+
 	return false
 }
 
