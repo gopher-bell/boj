@@ -20,6 +20,26 @@ func readWord() int {
 	return -1
 }
 
+func binarySearch(nums []int, find int) bool {
+	var start int
+	var end int
+
+	start = 0
+	end = len(nums) - 1
+
+	for start <= end {
+		mid := (start + end) / 2
+		if nums[mid] > find {
+			end = mid - 1
+		} else if nums[mid] < find {
+			start = mid + 1
+		} else {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	defer writer.Flush()
 	scanner.Split(bufio.ScanWords)
@@ -34,8 +54,15 @@ func main() {
 		nums2[i] = readWord()
 	}
 
-	sort.Slice(nums1, func(i, j int) bool {
-		return nums1[i] < nums1[j]
-	})
+	sort.Ints(nums1)
 
+	for i := range nums2 {
+		if binarySearch(nums1, nums2[i]) {
+			writer.WriteString("1")
+			writer.WriteString("\n")
+		} else {
+			writer.WriteString("0")
+			writer.WriteString("\n")
+		}
+	}
 }
