@@ -21,14 +21,16 @@ func readStdin() int {
 	return s
 }
 
-func getAboveAvg(keep []int, avg float32) int {
+func getAboveAvg(keep []int, total int) float32 {
+	avg := float32(total / len(keep))
 	var n int
 	for i := range keep {
 		if float32(keep[i]) > avg {
 			n++
 		}
 	}
-	return n
+
+	return float32(n) / float32(len(keep)) * 100
 }
 
 func main() {
@@ -42,14 +44,12 @@ func main() {
 		var total int
 		for j := 0; j < num; j++ {
 			s := readStdin()
-			keep[j] = s
 			total += s
+			keep[j] = s
 		}
-		avg := float32(total / num)
-		res := getAboveAvg(keep, avg)
-		ans := float32(res % num)
-		fmt.Println(res, num)
-		writer.WriteString(fmt.Sprintf("%.3f", ans))
+		res := getAboveAvg(keep, total)
+
+		writer.WriteString(fmt.Sprintf("%.3f", res))
 		writer.WriteString("%")
 		writer.WriteString("\n")
 	}
