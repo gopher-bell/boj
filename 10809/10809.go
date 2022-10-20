@@ -33,7 +33,6 @@ func main() {
 			comp[res[i]-97] = i
 		}
 	}
-
 	for i := range comp {
 		writer.WriteString(strconv.Itoa(comp[i]) + " ")
 	}
