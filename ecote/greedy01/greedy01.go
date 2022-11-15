@@ -13,8 +13,8 @@ var (
 
 func getWord() int {
 	scanner.Scan()
-	s, _ := strconv.Atoi(scanner.Text())
-	return s
+	r, _ := strconv.Atoi(scanner.Text())
+	return r
 }
 
 func main() {
