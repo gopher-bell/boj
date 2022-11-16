@@ -27,13 +27,13 @@ func getWords() []string {
 }
 
 func main() {
-	n1 := getWord()
+	n := getWord()
 	cmd := getWords()
 
-	graph := make([][]int, n1)
+	graph := make([][]int, n)
 
 	for i := range graph {
-		graph[i] = make([]int, n1)
+		graph[i] = make([]int, n)
 	}
 
 	x, y := 1, 1
