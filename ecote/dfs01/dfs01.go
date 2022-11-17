@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -15,47 +16,45 @@ var (
 	n, m    int
 )
 
-func getWords() int {
+func getWords() []int {
 	if scanner.Scan() {
-		s, _ := strconv.Atoi(scanner.Text())
-		return s
+		res := make([]int, m)
+		s := strings.Split(scanner.Text(), "")
+		for i := range s {
+			res[i], _ = strconv.Atoi(s[i])
+		}
+		return res
 	}
 
-	return -1
+	return nil
 }
 
 func dfs(graph [][]int, y, x int) bool {
 	if graph[y][x] == 0 {
 		graph[y][x] = 1
 		for k := 0; k < 4; k++ {
-			ny := y + dy[y]
-			nx := x + dx[x]
+			ny := y + dy[k]
+			nx := x + dx[k]
 			if ny > 0 && ny < n && nx > 0 && nx < m {
 				dfs(graph, ny, nx)
 			}
 		}
+		return true
 	}
 
 	return false
 }
 
 func main() {
-	scanner.Split(bufio.ScanBytes)
-
-	n, m = getWords(), getWords()
+	scanner.Scan()
+	s := strings.Fields(scanner.Text())
+	n, _ = strconv.Atoi(s[0])
+	m, _ = strconv.Atoi(s[1])
 
 	graph := make([][]int, n)
-	visited := make([][]bool, n)
 
 	for i := range graph {
-		graph[i] = make([]int, m)
-		visited[i] = make([]bool, m)
-	}
-
-	for i := range graph {
-		for j := range graph[i] {
-			graph[i][j] = getWords()
-		}
+		graph[i] = getWords()
 	}
 
 	for i := range graph {
@@ -65,4 +64,7 @@ func main() {
 			}
 		}
 	}
+
+	writer.WriteString(strconv.Itoa(result))
+	writer.Flush()
 }
