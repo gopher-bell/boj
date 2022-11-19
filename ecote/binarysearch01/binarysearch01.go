@@ -2,61 +2,56 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 var (
 	scanner = bufio.NewScanner(os.Stdin)
 	writer  = bufio.NewWriter(os.Stdout)
-	result  = 0
 )
 
-func getWords() []string {
+func getWord() int {
 	scanner.Scan()
-	return strings.Fields(scanner.Text())
+	s, _ := strconv.Atoi(scanner.Text())
+	return s
 }
 
-func binarySearch(nums []int, start, end, weight int) {
-	var total int
-	if start <= end {
+func binarySearch(nums []int, start, end, weight int) int {
+	var result int
+	for start <= end {
 		mid := (start + end) / 2
-		fmt.Println(start, end, mid)
-
+		var total int
 		for i := range nums {
-			if nums[i] > mid {
+			if mid < nums[i] {
 				total += nums[i] - mid
 			}
 		}
 		if total < weight {
-			binarySearch(nums, start, mid-1, weight)
+			end = mid - 1
 		} else {
 			result = mid
-			binarySearch(nums, mid+1, end, weight)
+			start = mid + 1
 		}
 	}
+
+	return result
 }
 
 func main() {
-	s := getWords()
+	scanner.Split(bufio.ScanWords)
+	n1, n2 := getWord(), getWord()
+	inputs := make([]int, n1)
 
-	n1, _ := strconv.Atoi(s[0])
-	n2, _ := strconv.Atoi(s[1])
-
-	slice := make([]int, n1)
-
-	t := getWords()
-
-	for i := range slice {
-		slice[i], _ = strconv.Atoi(t[i])
+	for i := range inputs {
+		inputs[i] = getWord()
 	}
 
-	sort.Ints(slice)
+	sort.Ints(inputs)
 
-	binarySearch(slice, 0, slice[len(slice)-1], n2)
+	s := binarySearch(inputs, 0, inputs[len(inputs)-1], n2)
 
-	fmt.Println(result)
+	writer.WriteString(strconv.Itoa(s))
+	writer.Flush()
 }
