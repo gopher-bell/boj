@@ -22,6 +22,5 @@ func solution(k int, m int, score []int) int {
 			total += min * m
 		}
 	}
-
 	return total
 }
