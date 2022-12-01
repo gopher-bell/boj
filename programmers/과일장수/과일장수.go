@@ -1,4 +1,4 @@
-package main
+package 과일장수
 
 import "sort"
 
