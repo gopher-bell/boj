@@ -1,24 +1,25 @@
 package 문자열나누기
 
 func solution(s string) int {
-	x := s[0]
-	cnt := 0
+	comp := s[0]
 	cnt1 := 0
 	cnt2 := 0
-	for idx, item := range s {
-		if item == rune(x) {
-			cnt1 += 1
+	res := 0
+	for i := 0; i < len(s); i++ {
+		if comp == s[i] {
+			cnt1++
 		} else {
-			cnt2 += 1
+			cnt2++
 		}
 		if cnt1 == cnt2 {
-			cnt += 1
-			if idx+1 != len(s) {
-				x = s[idx+1]
+			res++
+			if i+1 >= len(s) {
+				return res
 			} else {
-				return cnt
+				comp = s[i+1]
 			}
 		}
 	}
-	return cnt + 1
+
+	return res + 1
 }
