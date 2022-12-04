@@ -34,6 +34,7 @@ func main() {
 			res++
 		}
 	}
+
 	writer.WriteString(strconv.Itoa(res))
 	writer.Flush()
 }

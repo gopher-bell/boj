@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"os"
 	"strconv"
-	"strings"
 )
 
 var (
@@ -19,11 +18,11 @@ func getWord() int {
 }
 
 func isThree(i, j, k int) bool {
-	s1 := strconv.Itoa(i)
-	s2 := strconv.Itoa(j)
-	s3 := strconv.Itoa(k)
+	if i%10 == 3 || j/10 == 3 || j%10 == 3 || k/10 == 3 || k%10 == 3 {
+		return true
+	}
 
-	return strings.Contains(s1+s2+s3, "3")
+	return false
 }
 
 func main() {
