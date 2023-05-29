@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"os"
 	"strconv"
-	"strings"
 )
 
 var (
@@ -14,10 +13,9 @@ var (
 
 func main() {
 	defer writer.Flush()
-	scanner.Split(bufio.ScanWords)
+	scanner.Split(bufio.ScanLines)
 
-	var res = 1
-
+	res := 1
 	for i := 0; i < 3; i++ {
 		scanner.Scan()
 		s := scanner.Text()
@@ -25,18 +23,16 @@ func main() {
 		res *= r
 	}
 
-	s := strconv.Itoa(res)
-	ss := strings.Split(s, "")
-
-	ans := make([]int, 10)
-
-	for _, v := range ss {
-		k, _ := strconv.Atoi(v)
-		ans[k]++
+	arr := make([]int, 10)
+	for res > 10 {
+		tmp := res % 10
+		arr[tmp]++
+		res /= 10
 	}
+	arr[res]++
 
-	for i := range ans {
-		writer.WriteString(strconv.Itoa(ans[i]))
+	for i := range arr {
+		writer.WriteString(strconv.Itoa(arr[i]))
 		writer.WriteString("\n")
 	}
 }
