@@ -20,13 +20,10 @@ func getNumber() int {
 	scanner.Scan()
 	b := scanner.Bytes()
 	ans := 0
-	tmp := 0
 
 	for _, v := range b {
 		ans *= 10
-		tmp = int(v - '0')
-		ans += tmp
-		tmp = 0
+		ans += int(v - '0')
 	}
 
 	return ans
