@@ -37,22 +37,12 @@ func main() {
 	stack := make([]int, 0, nums)
 	for i := 0; i < nums; i++ {
 		height := getNumber()
-		flag := true
-		for len(stack) > 0 {
-			last := len(stack) - 1
-			if stack[last] > height {
-				cnt += len(stack)
-				stack = append(stack, height)
-				flag = false
-				break
-			} else {
-				stack = stack[:last]
-			}
+		for len(stack) > 0 && stack[len(stack)-1] <= height {
+			stack = stack[:len(stack)-1]
 		}
 
-		if flag {
-			stack = append(stack, height)
-		}
+		cnt += len(stack)
+		stack = append(stack, height)
 	}
 
 	writer.WriteString(strconv.Itoa(cnt))
