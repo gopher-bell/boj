@@ -11,11 +11,10 @@ var (
 	scanner = bufio.NewScanner(os.Stdin)
 )
 
-func getNumbers() int {
-	scanner.Scan()
-	b := scanner.Bytes()
+func getNumber() int {
 	ret := 0
-	for _, v := range b {
+	scanner.Scan()
+	for _, v := range scanner.Bytes() {
 		ret *= 10
 		ret += int(v - '0')
 	}
@@ -26,17 +25,18 @@ func getNumbers() int {
 func main() {
 	defer writer.Flush()
 	scanner.Split(bufio.ScanWords)
-	run := getNumbers()
-	nums := make([]int, 0, run)
-	for i := 0; i < run; i++ {
-		num := getNumbers()
-		nums = append(nums, num)
+	runs := getNumber()
+
+	numbers := make([]int, 0, runs)
+	for i := 0; i < runs; i++ {
+		num := getNumber()
+		numbers = append(numbers, num)
 	}
 
-	stack := make([]int, 0, run)
-	for i := range nums {
-		for len(stack) > 0 && nums[stack[len(stack)-1]] < nums[i] {
-			nums[stack[len(stack)-1]] = nums[i]
+	stack := make([]int, 0, runs)
+	for i, v := range numbers {
+		for len(stack) > 0 && numbers[stack[len(stack)-1]] < v {
+			numbers[stack[len(stack)-1]] = v
 			stack = stack[:len(stack)-1]
 		}
 
@@ -44,14 +44,11 @@ func main() {
 	}
 
 	for len(stack) > 0 {
-		nums[stack[len(stack)-1]] = -1
+		numbers[stack[len(stack)-1]] = -1
 		stack = stack[:len(stack)-1]
 	}
 
-	for i := range nums {
-		writer.WriteString(strconv.Itoa(nums[i]))
-		if i != len(nums)-1 {
-			writer.WriteString(" ")
-		}
+	for _, v := range numbers {
+		writer.WriteString(strconv.Itoa(v) + " ")
 	}
 }
