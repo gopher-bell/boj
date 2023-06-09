@@ -11,39 +11,34 @@ var (
 	scanner = bufio.NewScanner(os.Stdin)
 )
 
-type tower struct {
-	idx    int
-	height int
-}
-
 func getNumber() int {
+	ret := 0
 	scanner.Scan()
-	b := scanner.Bytes()
-	ans := 0
-
-	for _, v := range b {
-		ans *= 10
-		ans += int(v - '0')
+	for _, v := range scanner.Bytes() {
+		ret *= 10
+		ret += int(v - '0')
 	}
 
-	return ans
+	return ret
 }
 
 func main() {
 	defer writer.Flush()
 	scanner.Split(bufio.ScanWords)
-	nums := getNumber()
+	runs := getNumber()
+
+	stack := make([]int, 0, runs)
 	cnt := 0
-	stack := make([]int, 0, nums)
-	for i := 0; i < nums; i++ {
-		height := getNumber()
-		for len(stack) > 0 && stack[len(stack)-1] <= height {
+	for i := 0; i < runs; i++ {
+		num := getNumber()
+		for len(stack) > 0 && stack[len(stack)-1] <= num {
 			stack = stack[:len(stack)-1]
 		}
 
 		cnt += len(stack)
-		stack = append(stack, height)
+		stack = append(stack, num)
 	}
 
 	writer.WriteString(strconv.Itoa(cnt))
+
 }
