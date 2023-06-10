@@ -12,56 +12,59 @@ var (
 	writer  = bufio.NewWriter(os.Stdout)
 	dx      = []int{1, 0, -1, 0}
 	dy      = []int{0, 1, 0, -1}
-	graph   [][]int
-	weight  [][]int
-	n       int
-	m       int
 )
 
-func bfs(y, x int) {
-	queue := [][]int{{y, x}}
-	weight[y][x] = 1
-	for len(queue) != 0 {
-		dq := queue[0]
-		queue = queue[1:]
-		for i := 0; i < 4; i++ {
-			ey := dq[0] + dy[i]
-			ex := dq[1] + dx[i]
+type queue struct {
+	x int
+	y int
+}
 
-			if (0 <= ey && ey < n) && (0 <= ex && ex < m) {
-				if graph[ey][ex] == 1 && weight[ey][ex] == 0 {
-					weight[ey][ex] = weight[dq[0]][dq[1]] + 1
-					queue = append(queue, []int{ey, ex})
-				}
+func getNumbers() []int {
+	scanner.Scan()
+	nums := make([]int, 0)
+	for _, v := range scanner.Bytes() {
+		nums = append(nums, int(v-'0'))
+	}
+
+	return nums
+}
+
+func bfs(graph [][]int, x, y int) {
+	q := []queue{{x: x, y: y}}
+	for len(q) > 0 {
+		dq := q[0]
+		q = q[1:]
+		for i := 0; i < 4; i++ {
+			nx := dq.x + dx[i]
+			ny := dq.y + dy[i]
+			if nx < 0 || nx >= len(graph) || ny < 0 || ny >= len(graph[0]) || graph[nx][ny] != 1 {
+				continue
 			}
+			graph[nx][ny] = graph[dq.x][dq.y] + 1
+			q = append(q, queue{x: nx, y: ny})
 		}
 	}
 }
 
 func main() {
 	defer writer.Flush()
-	scanner.Split(bufio.ScanLines)
 	scanner.Scan()
 	input := strings.Fields(scanner.Text())
-	n, _ = strconv.Atoi(input[0])
-	m, _ = strconv.Atoi(input[1])
+	n, _ := strconv.Atoi(input[0])
 
-	graph = make([][]int, n)
-	weight = make([][]int, n)
-
+	graph := make([][]int, n)
 	for i := range graph {
 		scanner.Scan()
 		s := scanner.Text()
-		s = s[:m]
 		res := make([]int, len(s))
 		for j := range s {
 			k, _ := strconv.Atoi(string(s[j]))
 			res[j] = k
 		}
 		graph[i] = res
-		weight[i] = make([]int, m)
 	}
 
-	bfs(0, 0)
-	writer.WriteString(strconv.Itoa(weight[n-1][m-1]))
+	bfs(graph, 0, 0)
+
+	writer.WriteString(strconv.Itoa(graph[len(graph)-1][len(graph[0])-1]))
 }
