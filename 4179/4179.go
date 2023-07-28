@@ -51,23 +51,16 @@ func bfs(BGraph [][]string, FGraph, JGraph [][]int) int {
 		}
 	}
 
-	//for i := range FGraph {
-	//	fmt.Println(FGraph[i])
-	//}
-	//
-	//fmt.Println("===========")
-
 	for len(JQueue) > 0 {
-		//for i := range JGraph {
-		//	fmt.Println(JGraph[i])
-		//}
-		//fmt.Println("@@@@@@@@@")
 		dq := JQueue[0]
 		JQueue = JQueue[1:]
+		if dq.x == 0 || dq.y == 0 || dq.x == len(JGraph)-1 || dq.y == len(JGraph[0])-1 {
+			return JGraph[dq.x][dq.y] + 1
+		}
 		for i := 0; i < 4; i++ {
 			nx, ny := dq.x+dx[i], dq.y+dy[i]
 			if nx < 0 || nx >= len(JGraph) || ny < 0 || ny >= len(JGraph[0]) {
-				return JGraph[dq.x][dq.y] + 1
+				continue
 			}
 			if JGraph[nx][ny] >= 0 || BGraph[nx][ny] == "#" {
 				continue
