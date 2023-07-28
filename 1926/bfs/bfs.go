@@ -4,84 +4,85 @@ import (
 	"bufio"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var (
-	scanner = bufio.NewScanner(os.Stdin)
 	writer  = bufio.NewWriter(os.Stdout)
+	scanner = bufio.NewScanner(os.Stdin)
 	dx      = []int{1, 0, -1, 0}
 	dy      = []int{0, 1, 0, -1}
 )
 
-type pair struct {
+type q struct {
 	x int
 	y int
 }
 
-func getNumber() int {
-	scanner.Scan()
-	r := 0
-	for _, c := range scanner.Bytes() {
-		r *= 10
-		r += int(c - '0')
+func transferSlice(s []string, rg int) []int {
+	n := make([]int, rg)
+	for i := 0; i < rg; i++ {
+		n[i], _ = strconv.Atoi(s[i])
 	}
-	return r
+
+	return n
 }
 
-func bfs(graph [][]int, visited [][]bool, x, y int) (int, bool) {
-	ret := false
-	cnt := 1
-	queue := []pair{{x, y}}
+func bfs(graph [][]int, x, y int) int {
+	tot := 1
+	queue := []q{{x, y}}
 	for len(queue) > 0 {
 		dq := queue[0]
 		queue = queue[1:]
 		for i := 0; i < 4; i++ {
-			nx := dx[i] + dq.x
-			ny := dy[i] + dq.y
-			if nx < len(graph) && nx >= 0 && ny < len(graph[0]) && ny >= 0 {
-				if !visited[nx][ny] && graph[nx][ny] == 1 {
-					visited[nx][ny] = true
-					queue = append(queue, pair{nx, ny})
-					cnt++
-				}
+			nx, ny := dq.x+dx[i], dq.y+dy[i]
+			if nx < 0 || nx >= len(graph) || ny < 0 || ny >= len(graph[0]) {
+				continue
 			}
+			if graph[nx][ny] != 1 {
+				continue
+			}
+
+			graph[nx][ny] = 0
+			queue = append(queue, q{nx, ny})
+			tot++
 		}
-		ret = true
 	}
 
-	return cnt, ret
+	return tot
 }
 
 func main() {
 	defer writer.Flush()
-	scanner.Split(bufio.ScanWords)
-	n1, n2 := getNumber(), getNumber()
+	scanner.Scan()
+	s := strings.Split(scanner.Text(), " ")
+	n1, _ := strconv.Atoi(s[0])
+	n2, _ := strconv.Atoi(s[1])
+
 	graph := make([][]int, n1)
-	visited := make([][]bool, n1)
 	for i := range graph {
-		visited[i] = make([]bool, n2)
-		graph[i] = make([]int, n2)
-		for j := range graph[i] {
-			graph[i][j] = getNumber()
-		}
+		scanner.Scan()
+		s2 := strings.Split(scanner.Text(), " ")
+		graph[i] = transferSlice(s2, n2)
 	}
 
 	cnt := 0
 	max := 0
-	for i := range visited {
-		for j := range visited[i] {
-			if !visited[i][j] && graph[i][j] == 1 {
-				visited[i][j] = true
-				tot, success := bfs(graph, visited, i, j)
-				if success {
-					cnt++
-				}
-				if tot > max {
-					max = tot
+
+	for i := range graph {
+		for j := range graph[i] {
+			if graph[i][j] == 1 {
+				graph[i][j] = 0
+				cnt++
+				res := bfs(graph, i, j)
+				if res > max {
+					max = res
 				}
 			}
 		}
 	}
 
-	writer.WriteString(strconv.Itoa(cnt) + "\n" + strconv.Itoa(max))
+	writer.WriteString(strconv.Itoa(cnt))
+	writer.WriteString("\n")
+	writer.WriteString(strconv.Itoa(max))
 }
