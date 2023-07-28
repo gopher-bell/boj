@@ -8,101 +8,111 @@ import (
 )
 
 var (
-	scanner = bufio.NewScanner(os.Stdin)
 	writer  = bufio.NewWriter(os.Stdout)
-	dx      = [4]int{1, 0, -1, 0}
-	dy      = [4]int{0, 1, 0, -1}
+	scanner = bufio.NewScanner(os.Stdin)
+	dx      = []int{1, 0, -1, 0}
+	dy      = []int{0, 1, 0, -1}
 )
 
-type queue struct {
-	x, y int
+type q struct {
+	x int
+	y int
 }
 
-func getNumber() int {
-	ret := 0
-	scanner.Scan()
-	for _, v := range scanner.Bytes() {
-		ret *= 10
-		ret += int(v - '0')
-	}
-
-	return ret
-}
-
-func getString() []string {
-	scanner.Scan()
-	return strings.Split(scanner.Text(), "")
-}
-
-func bfs(graph [][]string, queueSlice []queue) (bool, int) {
-	cnt := 1
-	success := false
-	for len(queueSlice) > 0 {
-		dq := queueSlice[0]
-		queueSlice = queueSlice[1:]
-		for i := 0; i < 4; i++ {
-			nx := dq.x + dx[i]
-			ny := dq.y + dy[i]
-			// 범위에 안맞으면 진행 x
-			if nx < 0 || nx > len(graph)-1 || ny < 0 || ny > len(graph[0])-1 {
-				continue
+func bfs(BGraph [][]string, FGraph, JGraph [][]int) int {
+	FQueue := make([]q, 0)
+	JQueue := make([]q, 0)
+	for i := range BGraph {
+		for j := range BGraph[i] {
+			if BGraph[i][j] == "F" {
+				FQueue = append(FQueue, q{i, j})
+				FGraph[i][j] = 0
+			} else if BGraph[i][j] == "J" {
+				JQueue = append(JQueue, q{i, j})
+				JGraph[i][j] = 0
 			}
-			// 길이 아니면 진행 x
-			if graph[nx][ny] != "." {
-				continue
-
-			}
-
-			if graph[dq.x][dq.y] == "J" {
-				// 불과 겹치면 진행 x
-				for j := 0; j < 4; j++ {
-					nnx := nx + dx[j]
-					nny := ny + dy[j]
-					if nnx < 0 || nnx > len(graph)-1 || nny < 0 || nny > len(graph[0])-1 {
-						continue
-					}
-					if graph[nnx][nny] == "F" {
-						continue
-					}
-				}
-
-				cnt++
-
-				if nx == 0 || nx == len(graph)-1 || ny == 0 || ny == len(graph[0])-1 {
-					success = true
-					break
-				}
-			}
-
-			graph[nx][ny] = graph[dq.x][dq.y]
-			queueSlice = append(queueSlice, queue{nx, ny})
 		}
 	}
 
-	return success, cnt
+	for len(FQueue) > 0 {
+		dq := FQueue[0]
+		FQueue = FQueue[1:]
+		for i := 0; i < 4; i++ {
+			nx, ny := dq.x+dx[i], dq.y+dy[i]
+			if nx < 0 || nx >= len(FGraph) || ny < 0 || ny >= len(FGraph[0]) {
+				continue
+			}
+			if FGraph[nx][ny] >= 0 || BGraph[nx][ny] == "#" {
+				continue
+			}
+
+			FGraph[nx][ny] = FGraph[dq.x][dq.y] + 1
+			FQueue = append(FQueue, q{nx, ny})
+		}
+	}
+
+	//for i := range FGraph {
+	//	fmt.Println(FGraph[i])
+	//}
+	//
+	//fmt.Println("===========")
+
+	for len(JQueue) > 0 {
+		//for i := range JGraph {
+		//	fmt.Println(JGraph[i])
+		//}
+		//fmt.Println("@@@@@@@@@")
+		dq := JQueue[0]
+		JQueue = JQueue[1:]
+		for i := 0; i < 4; i++ {
+			nx, ny := dq.x+dx[i], dq.y+dy[i]
+			if nx < 0 || nx >= len(JGraph) || ny < 0 || ny >= len(JGraph[0]) {
+				return JGraph[dq.x][dq.y] + 1
+			}
+			if JGraph[nx][ny] >= 0 || BGraph[nx][ny] == "#" {
+				continue
+			}
+			if FGraph[nx][ny] != -1 && FGraph[nx][ny] <= JGraph[dq.x][dq.y]+1 {
+				continue
+			}
+
+			JGraph[nx][ny] = JGraph[dq.x][dq.y] + 1
+			JQueue = append(JQueue, q{nx, ny})
+		}
+	}
+
+	return -1
 }
 
 func main() {
 	defer writer.Flush()
-	scanner.Split(bufio.ScanWords)
-	n, m := getNumber(), getNumber()
-	queueSlice := make([]queue, 0, n*m)
-	graph := make([][]string, n)
-	for i := range graph {
-		graph[i] = make([]string, m)
-		graph[i] = getString()
-		for j := range graph[i] {
-			if graph[i][j] == "J" || graph[i][j] == "F" {
-				queueSlice = append(queueSlice, queue{i, j})
-			}
+	scanner.Scan()
+	s := strings.Split(scanner.Text(), " ")
+	n1, _ := strconv.Atoi(s[0])
+	n2, _ := strconv.Atoi(s[1])
+
+	BGraph := make([][]string, n1)
+	FGraph := make([][]int, n1)
+	JGraph := make([][]int, n1)
+	for i := range BGraph {
+		scanner.Scan()
+		s2 := strings.Split(scanner.Text(), "")
+		s2 = s2[:n2]
+		BGraph[i] = s2
+
+		FGraph[i] = make([]int, n2)
+		JGraph[i] = make([]int, n2)
+		for j := 0; j < n2; j++ {
+			FGraph[i][j] = -1
+			JGraph[i][j] = -1
 		}
 	}
 
-	success, cnt := bfs(graph, queueSlice)
-	if success {
-		writer.WriteString(strconv.Itoa(cnt))
+	res := bfs(BGraph, FGraph, JGraph)
+	if res == -1 {
+		writer.WriteString("IMPOSSIBLE")
 		return
 	}
 
-	writer.WriteString("IMPOSSIBLE")
+	writer.WriteString(strconv.Itoa(res))
 }
