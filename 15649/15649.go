@@ -35,7 +35,7 @@ func fn(k int) {
 		return
 	}
 
-	for i := k; i <= n; i++ {
+	for i := 1; i <= n; i++ {
 		if !visited[i] {
 			visited[i] = true
 			arr[k] = i
